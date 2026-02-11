@@ -36,16 +36,21 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void MoveInput(const FInputActionValue& Value);
+	void RotateInput(const FInputActionValue& Value);
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputMappingContext* DefaultMappingContext;
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* MoveAction;
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* RotateAction;
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
 	UPROPERTY(EditAnywhere)
 	float Speed = 300.0f;
+	UPROPERTY(EditAnywhere)
+	float RotateRate = 100.0f;
 };

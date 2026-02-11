@@ -49,6 +49,7 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATank::MoveInput);
+		EIC->BindAction(RotateAction, ETriggerEvent::Triggered, this, &ATank::RotateInput);
 	}
 }
 
@@ -58,4 +59,12 @@ void ATank::MoveInput(const FInputActionValue& Value)
 	FVector DeltaLocation;
 	DeltaLocation.X = Speed * InputValue * GetWorld()->GetDeltaSeconds();
 	AddActorLocalOffset(DeltaLocation, true);
+}
+
+void ATank::RotateInput(const FInputActionValue& Value)
+{
+	float InputValue = Value.Get<float>();
+	FRotator DeltaRotation;
+	DeltaRotation.Yaw = RotateRate * InputValue * GetWorld()->GetDeltaSeconds();
+	AddActorLocalRotation(DeltaRotation, true);
 }
