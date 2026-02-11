@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "BasePawn.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
-
-#include "InputMappingContext.h"
-#include "EnhancedInputSubsystems.h"
-
+#include "InputActionValue.h"
 #include "Tank.generated.h"
+
+class UInputMappingContext;
+class USpringArmComponent;
+class UCameraComponent;
+class UInputAction;
+
 
 /**
  * 
@@ -34,12 +35,17 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void MoveInput(const FInputActionValue& Value);
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputMappingContext* DefaultMappingContext;
-
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* MoveAction;
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
+	UPROPERTY(EditAnywhere)
+	float Speed = 300.0f;
 };

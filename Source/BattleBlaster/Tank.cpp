@@ -2,7 +2,12 @@
 
 
 #include "Tank.h"
-
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
+#include "InputMappingContext.h"
+#include "InputAction.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 
 ATank::ATank()
 {
@@ -17,15 +22,11 @@ void ATank::BeginPlay()
 {
 	Super::BeginPlay();
 
-	APlayerController* PlayerController = Cast<APlayerController>(Controller);
-	if (PlayerController)
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
-		ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer();
-		if (LocalPlayer)
+		if (ULocalPlayer* LocalPlayer = PlayerController->GetLocalPlayer())
 		{
-			UEnhancedInputLocalPlayerSubsystem* Subsystem;
-			Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer);
-			if (Subsystem)
+			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(LocalPlayer))
 			{
 				Subsystem->AddMappingContext(DefaultMappingContext, 0);
 			}
@@ -45,4 +46,16 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ATank::MoveInput);
+	}
+}
+
+void ATank::MoveInput(const FInputActionValue& Value)
+{
+	float InputValue = Value.Get<float>();
+	FVector DeltaLocation;
+	DeltaLocation.X = Speed * InputValue * GetWorld()->GetDeltaSeconds();
+	AddActorLocalOffset(DeltaLocation, true);
 }
