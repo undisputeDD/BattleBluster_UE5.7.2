@@ -39,6 +39,13 @@ void ATank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
+	if (PlayerController)
+	{
+		FHitResult HitResult;
+		PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 30.0f, 16, FColor::Red);
+	}
 }
 
 // Called to bind functionality to input
