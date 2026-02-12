@@ -15,5 +15,20 @@ ABasePawn::ABasePawn()
 	BaseMesh->SetupAttachment(CapsuleComp);
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Turret Mesh"));
 	TurretMesh->SetupAttachment(BaseMesh);
+	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Projectile Spawn Point"));
+	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
+}
+
+void ABasePawn::RotateTurret(FVector LookAtTarget)
+{
+	FVector VectorToTarget = LookAtTarget - TurretMesh->GetComponentLocation();
+	FRotator LookAtRotation = FRotator(0.0f, VectorToTarget.Rotation().Yaw, 0.0f);
+	FRotator InterpolateRotation = FMath::RInterpTo(TurretMesh->GetComponentRotation(), LookAtRotation, GetWorld()->GetDeltaSeconds(), 20.0f);
+	TurretMesh->SetWorldRotation(InterpolateRotation);
+}
+
+void ABasePawn::Fire()
+{
+	GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
 }
 

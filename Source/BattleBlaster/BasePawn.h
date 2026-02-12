@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Projectile.h"
 
 #include "BasePawn.generated.h"
 
@@ -18,6 +19,9 @@ public:
 	// Sets default values for this pawn's properties
 	ABasePawn();
 
+	void RotateTurret(FVector LookAtTarget);
+	void Fire();
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	UCapsuleComponent* CapsuleComp;
@@ -27,4 +31,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* TurretMesh;
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* ProjectileSpawnPoint;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AProjectile> ProjectileClass;
 };
