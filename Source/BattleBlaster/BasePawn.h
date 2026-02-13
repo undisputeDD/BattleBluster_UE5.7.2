@@ -21,6 +21,7 @@ public:
 
 	void RotateTurret(FVector LookAtTarget);
 	void Fire();
+	virtual void HandleDestruction();
 
 private:
 	UPROPERTY(VisibleAnywhere)

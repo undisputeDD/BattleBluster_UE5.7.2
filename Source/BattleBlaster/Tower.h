@@ -27,6 +27,8 @@ public:
 	void SetTank(ATank* NewTank);
 	void CheckFireCondition();
 
+	virtual void HandleDestruction() override;
+
 private:
 	bool IsInFireRange();
 

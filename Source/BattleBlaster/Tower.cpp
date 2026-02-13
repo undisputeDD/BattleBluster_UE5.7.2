@@ -29,10 +29,17 @@ void ATower::SetTank(ATank* NewTank)
 
 void ATower::CheckFireCondition()
 {
-	if (IsInFireRange())
+	if (Tank && IsInFireRange() && Tank->GetIsAlive())
 	{
 		Fire();
 	}
+}
+
+void ATower::HandleDestruction()
+{
+	Super::HandleDestruction();
+	UE_LOG(LogTemp, Display, TEXT("ATower died."));
+	Destroy();
 }
 
 bool ATower::IsInFireRange()

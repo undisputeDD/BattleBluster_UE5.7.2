@@ -38,6 +38,10 @@ public:
 	void MoveInput(const FInputActionValue& Value);
 	void RotateInput(const FInputActionValue& Value);
 
+	virtual void HandleDestruction() override;
+	void SetPlayerEnabled(bool Enabled);
+	bool GetIsAlive();
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputMappingContext* DefaultMappingContext;
@@ -55,4 +59,6 @@ private:
 	float Speed = 300.0f;
 	UPROPERTY(EditAnywhere)
 	float RotateRate = 100.0f;
+	APlayerController* PlayerController;
+	bool IsAlive;
 };
