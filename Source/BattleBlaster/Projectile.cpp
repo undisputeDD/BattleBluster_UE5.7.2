@@ -4,6 +4,8 @@
 #include "Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -14,6 +16,9 @@ AProjectile::AProjectile()
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Projectile Mesh"));
 	SetRootComponent(ProjectileMesh);
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement Component"));
+
+	TrailParticles = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Trail Particles"));
+	TrailParticles->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -22,6 +27,10 @@ void AProjectile::BeginPlay()
 	Super::BeginPlay();
 	
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	if (LaunchSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchSound, GetActorLocation());
+	}
 }
 
 // Called every frame
@@ -39,6 +48,23 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		if (MyOwner && (MyOwner != OtherActor) && (OtherActor != this))
 		{
 			UGameplayStatics::ApplyDamage(OtherActor, Damage, MyOwner->GetInstigatorController(), this, UDamageType::StaticClass());
+
+			if (HitParticles)
+			{
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitParticles, GetActorLocation(), GetActorRotation());
+			}
+			if (HitSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, GetActorLocation());
+			}
+			if (HitCameraShakeClass)
+			{
+				APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+				if (PlayerController)
+				{
+					PlayerController->ClientStartCameraShake(HitCameraShakeClass);
+				}
+			}
 		}
 	}
 	Destroy();

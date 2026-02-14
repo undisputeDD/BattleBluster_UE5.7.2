@@ -2,6 +2,8 @@
 
 
 #include "BasePawn.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABasePawn::ABasePawn()
@@ -39,5 +41,21 @@ void ABasePawn::Fire()
 void ABasePawn::HandleDestruction()
 {
 	UE_LOG(LogTemp, Display, TEXT("BasePawn died."));
+	if (DeathEffect)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), DeathEffect, GetActorLocation(), GetActorRotation());
+	}
+	if (DeathSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
+	}
+	if (DeathCameraShakeClass)
+	{
+		APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		if (PlayerController)
+		{
+			PlayerController->ClientStartCameraShake(DeathCameraShakeClass);
+		}
+	}
 }
 

@@ -10,6 +10,8 @@
 
 #include "BasePawn.generated.h"
 
+class UNiagaraSystem;
+
 UCLASS()
 class BATTLEBLASTER_API ABasePawn : public APawn
 {
@@ -36,4 +38,10 @@ private:
 	USceneComponent* ProjectileSpawnPoint;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectile> ProjectileClass;
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* DeathEffect;
+	UPROPERTY(EditAnywhere)
+	USoundBase* DeathSound;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShakeBase> DeathCameraShakeClass;
 };

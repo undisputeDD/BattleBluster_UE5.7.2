@@ -7,6 +7,8 @@
 #include "Projectile.generated.h"
 
 class UProjectileMovementComponent;
+class UNiagaraComponent;
+class UNiagaraSystem;
 
 UCLASS()
 class BATTLEBLASTER_API AProjectile : public AActor
@@ -35,4 +37,14 @@ private:
 	UProjectileMovementComponent* ProjectileMovementComponent;
 	UPROPERTY(EditAnywhere)
 	float Damage = 25.0f;
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* TrailParticles;
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* HitParticles;
+	UPROPERTY(EditAnywhere)
+	USoundBase* LaunchSound;
+	UPROPERTY(EditAnywhere)
+	USoundBase* HitSound;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShakeBase> HitCameraShakeClass;
 };
