@@ -5,6 +5,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Tower.h"
 #include "Tank.h"
+#include "BattleBlasterGameInstance.h"
+#include "ScreenMessage.h"
 
 void ABattleBlasterGameMode::BeginPlay()
 {
@@ -36,13 +38,30 @@ void ABattleBlasterGameMode::BeginPlay()
 			}
 		}
 	}
+
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (PlayerController)
+	{
+		ScreenMessageWidget = CreateWidget<UScreenMessage>(PlayerController, ScreenMessageClass);
+		if (ScreenMessageWidget)
+		{
+			ScreenMessageWidget->SetMessageText("Get Ready!");
+			ScreenMessageWidget->AddToPlayerScreen();
+		}
+	}
+
+	CountdownSeconds = CountdownDelta;
+	GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &ABattleBlasterGameMode::OnCountDownTimerTimeout, 1.0f, true);
 }
 
 void ABattleBlasterGameMode::ActorDied(AActor* DamagedActor)
 {
+	bool IsGameOver = false;
+
 	if (DamagedActor == Tank)
 	{
 		Tank->HandleDestruction();
+		IsGameOver = true;
 	}
 	else
 	{
@@ -54,7 +73,53 @@ void ABattleBlasterGameMode::ActorDied(AActor* DamagedActor)
 			if (TowerCount <= 0)
 			{
 				UE_LOG(LogTemp, Display, TEXT("All Towers destroyed, victory!"));
+				IsGameOver = true;
+				IsVictory = true;
 			}
 		}
+	}
+
+	if (IsGameOver)
+	{
+		FString GameOverString = IsVictory ? "Victory" : "Defeat";
+		UE_LOG(LogTemp, Display, TEXT("Game is over: %s!"), *GameOverString);
+		ScreenMessageWidget->SetMessageText(FString::Printf(TEXT("Game is over : %s!"), *GameOverString));
+		ScreenMessageWidget->SetVisibility(ESlateVisibility::Visible);
+		FTimerHandle GameOverTimerHandler;
+		GetWorldTimerManager().SetTimer(GameOverTimerHandler, this, &ABattleBlasterGameMode::OnGameOverTimerTimeout, GameOverTimeout, false);
+	}
+}
+
+void ABattleBlasterGameMode::OnGameOverTimerTimeout()
+{
+	UE_LOG(LogTemp, Display, TEXT("Game over timeout!"));
+	UBattleBlasterGameInstance* BBGI = Cast<UBattleBlasterGameInstance>(GetGameInstance());
+	if (IsVictory)
+	{
+		BBGI->LoadNextLevel();
+	}
+	else
+	{
+		BBGI->RestartCurrentLevel();
+	}
+}
+
+void ABattleBlasterGameMode::OnCountDownTimerTimeout()
+{
+	--CountdownSeconds;
+	if (CountdownSeconds > 0)
+	{
+		ScreenMessageWidget->SetMessageText(FString::Printf(TEXT("%d"), CountdownSeconds));
+	}
+	else if (CountdownSeconds == 0)
+	{
+		ScreenMessageWidget->SetMessageText("Go!");
+		Tank->SetPlayerEnabled(true);
+	}
+	else
+	{
+		GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+		UE_LOG(LogTemp, Display, TEXT("Clear timer"));
+		ScreenMessageWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 }

@@ -34,6 +34,7 @@ void ATank::BeginPlay()
 		}
 	}
 	IsAlive = true;
+	SetPlayerEnabled(false);
 }
 
 // Called every frame

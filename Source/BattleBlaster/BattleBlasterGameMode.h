@@ -7,6 +7,7 @@
 #include "BattleBlasterGameMode.generated.h"
 
 class ATank;
+class UScreenMessage;
 
 /**
  * 
@@ -22,8 +23,23 @@ protected:
 
 public:
 	void ActorDied(AActor* DamagedActor);
+	void OnGameOverTimerTimeout();
+	void OnCountDownTimerTimeout();
 
 private:
 	ATank* Tank;
 	int32 TowerCount;
+	UPROPERTY(EditAnywhere)
+	float GameOverTimeout = 3.0f;
+	bool IsVictory = false;
+	UPROPERTY(EditAnywhere)
+	FTimerHandle CountdownTimerHandle;
+	UPROPERTY(EditAnywhere)
+	int32 CountdownDelta = 3;
+	int32 CountdownSeconds;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UScreenMessage> ScreenMessageClass;
+
+	UScreenMessage* ScreenMessageWidget;
 };
